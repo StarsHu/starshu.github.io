@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<search>
+  <entry>
+    <title><![CDATA[importlib使用心得]]></title>
+    <url>%2F2017%2F09%2F12%2Fimportlib%2F</url>
+    <content type="text"><![CDATA[虽然Python的import使用起来非常方便, 但有时候我们需要通过字符串来导入, 来实现灵活的导入. 特别是需要根据当前情况动态载入不同的类/方法的时候. 在cookbook中, 可以看到一个经典的实现. 可以实现通过字符串来导入包(package)或者模块(module), 但是我们有时候还需要导入类(class)或函数(function). importlib库的import_module函数并不能处理这种情况. 只能实现如下功能123456789# test1.pydef hello(): print("hello world!") # test2.pyimport importlibtest1 = importlib.import_module('test1')test1.hello() 但如果想直接导入函数,如1234# test3.pyfrom test1 import hellohello() 就无法只通过importlib库实现了, 因为import_module只能导入module, 当然你可以试试, 会报错显示找不到module. 但我们可以曲线救国. 首先每个模块导入后是一个对象(object), 它里面的各个函数都是以属性(attr)的形式挂靠在里面, 所以我们可以使用getattr来找到制定的函数. 示例一: 12345# test4.pyimport importlibhello = getattr(importlib.import_module('test1'), 'hello')hello() 等价于 1234# test3.pyfrom test1 import hellohello() 示例二: 1234import importlibClassA = getattr(importlib.import_module('packege.module'), 'ClassA')class_a = ClassA() 等价于 123from packege.module import ClassAclass_a = ClassA()]]></content>
+      <categories>
+        <category>coding</category>
+      </categories>
+      <tags>
+        <tag>python</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[部署文档(rabbitmq篇)]]></title>
+    <url>%2F2017%2F09%2F05%2Fdeploy-config-backup%2F</url>
+    <content type="text"><![CDATA[这段时间多次安装rabbitmq, 写篇日志记录下, 方便以后. 本文默认环境为Ubuntu 16.04+ 1 安装Erlang环境12345678sudo apt-get updatesudo apt-get upgradecd /tmpwget http://packages.erlang-solutions.com/ubuntu/erlang_solutions.ascsudo apt-key add erlang_solutions.ascsudo apt-get updatesudo apt-get install erlangsudo apt-get install erlang-nox 2 添加rabbitmq的apt源12echo 'deb http://www.rabbitmq.com/debian/ testing main' | sudo tee /etc/apt/sources.list.d/rabbitmq.listwget -O- https://www.rabbitmq.com/rabbitmq-release-signing-key.asc |sudo apt-key add - 3 安装rabbitmq本体12sudo apt-get updatesudo apt-get install rabbitmq-server -y 4 启停rabbitmq命令1234sudo systemctl enable rabbitmq-serversudo systemctl start rabbitmq-serversudo systemctl status rabbitmq-serversudo systemctl stop rabbitmq-server 更多systemctl使用可以自行搜索或者简单的命令行启动123sudo rabbitmq-serversudo rabbitmq-server --detached (后台启动)sudo rabbitmqctl stop 5 安装管理插件(可选)1sudo rabbitmq-plugins enable rabbitmq_management 安装后可以访问15672端口通过UI界面查看rabbitmq当前工作状态 添加rabbitmq用户及vhost1234sudo rabbitmqctl add_user myuser mypasswordsudo rabbitmqctl add_vhost myvhostsudo rabbitmqctl set_user_tags myuser mytagsudo rabbitmqctl set_permissions -p myvhost myuser ".*" ".*" ".*" rabbitmq安装后会有一个默认账户guest:guest, 可以安全起见做删除处理.1sudo rabbitmqctl delete_user guest]]></content>
+      <categories>
+        <category>coding</category>
+      </categories>
+      <tags>
+        <tag>运维</tag>
+        <tag>rabbitmq</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[Django 1.10后的中间件(middleware)使用及升级]]></title>
+    <url>%2F2017%2F01%2F09%2Fdjango-middleware-update%2F</url>
+    <content type="text"><![CDATA[前言Django升级1.10后,中间件有了很大的变化.虽然说给以往版本升级1.10增加了少许工作,但是的确简化了中间件,更容易理解和使用. Django 1.9及以前的中间件1.9及以前的中间件只有一种结构,就是新建一个类,在其中按照django文档所述建立几个钩子函数,因为已经是历史了,在这里不多废话,简单写一个例子.123456789101112131415161718192021222324252627282930313233343536373839class SimpleMiddleware(object): # 1.9及以前的middleware def __init__(self): pass def process_request(self, request): return HttpResponse or None def process_view(self, request, view_func, view_args, view_kwargs): return HttpResponse or None def process_response(self, request, response): return HttpResponse def process_template_response(self, request, response): return HttpResponse def process_exception(self, request): return HttpResponse or None``` ## Django 1.10的中间件 1.10后,中间件有两种,一种是和以前一样新建一个类,或者直接新建一个函数.参考[Middleware](https://docs.djangoproject.com/en/1.10/topics/http/middleware/). 1. 方法一 ``` python class SimpleMiddleware(object): def __init__(self, get_response): self.get_response = get_response # 初始化,仅在启动时调用一次 def __call__(self, request): # 在调用view前执行的代码,可对request进行操作 response = self.get_response(request) # 在调用view后执行的代码,在此可对request和response进行操作 return response 方法二 12345678910111213def simple_middleware(get_response): # 初始化,仅在启动时调用一次 def middleware(request): # 在调用view前执行的代码,可对request进行操作 response = get_response(request) # 在调用view后执行的代码,在此可对request和response进行操作 return response return middleware 可见,相比旧版的构筑方式,新版构筑方式非常简洁和容易理解,但是新版中间件中,只重写了process_request和process_response,用__call__替代.其他三种钩子函数依然存在,调用方法也和之前保持一致.但的确平时只用到了这两个钩子函数,只有看文档才能回想起其他那三种的存在. 将之前的中间件升级以适配1.10方法很简单,参考文档Upgrading pre-Django 1.10-style middleware,其实就是给之前的中间件类一个父类,这个父类会帮助我们进行切换.很简单的例子:class SimpleMiddleware(object):变为class SimpleMiddleware(MiddlewareMixin):即可,这个转换用的父类路径是django.utils.deprecation.MiddlewareMixin.它的代码十分简单,看完就能理解新旧中间件的区别.123456789101112131415# django.utils.deprecation.py L126class MiddlewareMixin(object): def __init__(self, get_response=None): self.get_response = get_response super(MiddlewareMixin, self).__init__() def __call__(self, request): response = None if hasattr(self, &apos;process_request&apos;): response = self.process_request(request) if not response: response = self.get_response(request) if hasattr(self, &apos;process_response&apos;): response = self.process_response(request, response) return response 升级中遇到的一些小坑讲讲我自己升级中碰到的一些小坑 get_response方法 在新版中间件,这个函数非常重要,Django通过这个函数从request获取response,承上启下,不可或缺.从文档可知,这个函数是在中间件初始化__init__时传入的.但是!!!,在1.10之前的django中,__init__函数并不是每次都能获取到get_response参数,所以会导致报错. 解决办法就是初始化时给get_response参数一个默认值None,可以参看MiddlewareMixin类的__init__方法. settings的中间件列表命名 在之前,settings中的中间件列表是叫MIDDLEWARE_CLASSES的, 然而现在,直接叫做MIDDLEWARE了.如果没注意这一点,依然会各种报错,因为django将你1.10版本的新中间件用1.9的处理方式处理了.12345678910111213141516171819202122# settings# beforeMIDDLEWARE_CLASSES = [ &apos;django.middleware.security.SecurityMiddleware&apos;, &apos;django.contrib.sessions.middleware.SessionMiddleware&apos;, &apos;django.middleware.common.CommonMiddleware&apos;, &apos;django.middleware.csrf.CsrfViewMiddleware&apos;, &apos;django.contrib.auth.middleware.AuthenticationMiddleware&apos;, &apos;django.contrib.auth.middleware.SessionAuthenticationMiddleware&apos;, &apos;django.contrib.messages.middleware.MessageMiddleware&apos;, &apos;django.middleware.clickjacking.XFrameOptionsMiddleware&apos;,]# afterMIDDLEWARE = [ &apos;django.middleware.security.SecurityMiddleware&apos;, &apos;django.contrib.sessions.middleware.SessionMiddleware&apos;, &apos;django.middleware.common.CommonMiddleware&apos;, &apos;django.middleware.csrf.CsrfViewMiddleware&apos;, &apos;django.contrib.auth.middleware.AuthenticationMiddleware&apos;, &apos;django.contrib.messages.middleware.MessageMiddleware&apos;, &apos;django.middleware.clickjacking.XFrameOptionsMiddleware&apos;,] 结语虽然说新版本的中间件很简洁很人性化,但是升级过程很蛋疼.不知道在哪看到过,这种开发过程中由于各种原因留下的,后面不得不去修改的,称为’技术债’.虽然我们主观上不喜欢欠债,但是不可否认贷款是快速发展必经之路.]]></content>
+      <categories>
+        <category>coding</category>
+      </categories>
+      <tags>
+        <tag>django</tag>
+        <tag>python</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[在Django中发送邮件]]></title>
+    <url>%2F2016%2F12%2F31%2Fusing-email-in-django%2F</url>
+    <content type="text"><![CDATA[对于网站来说,邮件功能不能说是一个常用功能,但也是不可或缺的.之前在自己的博客网站中实现了新注册用户必须经过邮件验证才能激活的功能,记录一下过程. 正文1 设置发件服务器123456# settings.pyEMAIL_HOST = 'smtp.sina.com'EMAIL_PORT = 25EMAIL_HOST_USER = 'my-email@sina.com'EMAIL_HOST_PASSWORD = '******'EMAIL_USE_TLS = True EMAIL_HOST: smtp服务器地址EMAIL_PORT: 服务器端口EMAIL_HOST_USER: 邮箱账号EMAIL_HOST_PASSWORD: 邮箱密码EMAIL_USE_TLS: 是否使用TLS加密 可以查看django的settings中关于email的部分了解进一步信息.关于服务器地址和端口以及是否支持SSL/TLS, 请查看你使用的邮箱的帮助文档.国内使用最方便的我觉得是QQ邮箱. 2: 发送邮件12345678910def send(to): """ to: 目标邮箱地址 """ subject, form_email = 'hi', 'Me &lt;my-emial@sina.com&gt;' text_content = "这是一份邮件" html_content = "&lt;b&gt;这是一份邮件&lt;/b&gt;&lt;br /&gt;" mail = EmailMultiAlternatives(subject, text_content, form_email, [to]) mail.attach_alternative(html_content, 'text/html') mail.send() EmailMultiAlternatives类的使用参考EmailMultiAlternatives类这个方法比起简单的send_mail,好处是发送出的邮件中同时包含了文本和超文本内容,如果要在邮件中加入链接,使用这种方式体验比较好. 参考资料 Django官方文档的邮件模块]]></content>
+      <categories>
+        <category>coding</category>
+      </categories>
+      <tags>
+        <tag>django</tag>
+        <tag>python</tag>
+      </tags>
+  </entry>
+</search>
