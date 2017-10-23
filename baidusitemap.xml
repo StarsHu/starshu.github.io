@@ -4,28 +4,6 @@
 
     
   <url>
-    <loc>https://hstarhu.com/2017/01/09/django-middleware-update/</loc>
-    <lastmod>2017-09-22T03:05:10.000Z</lastmod>
-    <data>
-        <display>
-        <title>Django 1.10后的中间件(middleware)使用及升级</title>
-        <pubTime>2017-01-09T12:30:46.000Z</pubTime>
-        
-        <tag>django</tag>
-         
-        <tag>python</tag>
-         
-         
-           
-             
-              <breadCrumb title="coding" url="https://hstarhu.com/categories/coding/"/>
-          
-        </display>
-    </data>
-    </url>
-
-    
-  <url>
     <loc>https://hstarhu.com/2017/09/12/importlib/</loc>
     <lastmod>2017-09-22T03:05:10.000Z</lastmod>
     <data>
@@ -46,6 +24,28 @@
 
     
   <url>
+    <loc>https://hstarhu.com/2017/01/09/django-middleware-update/</loc>
+    <lastmod>2017-09-22T03:05:10.000Z</lastmod>
+    <data>
+        <display>
+        <title>Django 1.10后的中间件(middleware)使用及升级</title>
+        <pubTime>2017-01-09T12:30:46.000Z</pubTime>
+        
+        <tag>python</tag>
+         
+        <tag>django</tag>
+         
+         
+           
+             
+              <breadCrumb title="coding" url="https://hstarhu.com/categories/coding/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
     <loc>https://hstarhu.com/2016/12/31/using-email-in-django/</loc>
     <lastmod>2017-09-22T03:05:10.000Z</lastmod>
     <data>
@@ -53,9 +53,9 @@
         <title>在Django中发送邮件</title>
         <pubTime>2016-12-31T10:24:34.000Z</pubTime>
         
-        <tag>django</tag>
-         
         <tag>python</tag>
+         
+        <tag>django</tag>
          
          
            
