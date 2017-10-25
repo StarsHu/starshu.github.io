@@ -4,13 +4,15 @@
 
     
   <url>
-    <loc>https://hstarhu.com/2017/09/12/importlib/</loc>
-    <lastmod>2017-09-22T03:05:10.000Z</lastmod>
+    <loc>https://hstarhu.com/2017/10/24/install-TA-LIB/</loc>
+    <lastmod>2017-10-24T08:54:32.307Z</lastmod>
     <data>
         <display>
-        <title>importlib使用心得</title>
-        <pubTime>2017-09-12T14:15:50.000Z</pubTime>
+        <title>install-TA-LIB</title>
+        <pubTime>2017-10-24T07:42:41.000Z</pubTime>
         
+        <tag>运维</tag>
+         
         <tag>python</tag>
          
          
@@ -34,6 +36,26 @@
         <tag>python</tag>
          
         <tag>django</tag>
+         
+         
+           
+             
+              <breadCrumb title="coding" url="https://hstarhu.com/categories/coding/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>https://hstarhu.com/2017/09/12/importlib/</loc>
+    <lastmod>2017-09-22T03:05:10.000Z</lastmod>
+    <data>
+        <display>
+        <title>importlib使用心得</title>
+        <pubTime>2017-09-12T14:15:50.000Z</pubTime>
+        
+        <tag>python</tag>
          
          
            

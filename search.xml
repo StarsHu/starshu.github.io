@@ -1,6 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[install-TA-LIB]]></title>
+    <url>%2F2017%2F10%2F24%2Finstall-TA-LIB%2F</url>
+    <content type="text"><![CDATA[安装ta-lit会有不少坑，写一篇日志记录下。 安装依赖库Mac OS X1$ brew install ta-lib Linux(Debian/Ubuntu)下载解压安装包推荐到/tmp目录下操作。12$ wget http://prdownloads.sourceforge.net/ta-lib/ta-lib-0.4.0-src.tar.gz$ tar xvfz ta-lib-0.4.0-src.tar.gz 安装1234$ cd ta-lib$ ./configure$ make$ sudo make install 这会将ta-lib的库文件安装到/usr/local/bin目录下，在第二部可以改为./configure --prefix=/usr安装到/user/bin下。 配置动态链接库有好几种方式可以达到链接上动态链接库的目的，此处仅介绍我使用的，我认为最方便的一种方式。1echo &quot;/usr/local/lib&quot;&gt;&gt;/etc/ld.so.conf 如果安装时是选择了/usr目录，那么将上方代码里的/usr/local/lib换成/usr/lib。 安装本体1pip install TA-Lib 坑主要集中在依赖库的安装上，本体的安装反而平淡无奇。]]></content>
+      <categories>
+        <category>coding</category>
+      </categories>
+      <tags>
+        <tag>运维</tag>
+        <tag>python</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[importlib使用心得]]></title>
     <url>%2F2017%2F09%2F12%2Fimportlib%2F</url>
     <content type="text"><![CDATA[虽然Python的import使用起来非常方便, 但有时候我们需要通过字符串来导入, 来实现灵活的导入. 特别是需要根据当前情况动态载入不同的类/方法的时候. 在cookbook中, 可以看到一个经典的实现. 可以实现通过字符串来导入包(package)或者模块(module), 但是我们有时候还需要导入类(class)或函数(function). importlib库的import_module函数并不能处理这种情况. 只能实现如下功能123456789# test1.pydef hello(): print("hello world!") # test2.pyimport importlibtest1 = importlib.import_module('test1')test1.hello() 但如果想直接导入函数,如1234# test3.pyfrom test1 import hellohello() 就无法只通过importlib库实现了, 因为import_module只能导入module, 当然你可以试试, 会报错显示找不到module. 但我们可以曲线救国. 首先每个模块导入后是一个对象(object), 它里面的各个函数都是以属性(attr)的形式挂靠在里面, 所以我们可以使用getattr来找到制定的函数. 示例一: 12345# test4.pyimport importlibhello = getattr(importlib.import_module('test1'), 'hello')hello() 等价于 1234# test3.pyfrom test1 import hellohello() 示例二: 1234import importlibClassA = getattr(importlib.import_module('packege.module'), 'ClassA')class_a = ClassA() 等价于 123from packege.module import ClassAclass_a = ClassA()]]></content>

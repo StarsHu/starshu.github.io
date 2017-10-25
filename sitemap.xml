@@ -2,14 +2,21 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
-    <loc>https://hstarhu.com/2017/09/12/importlib/</loc>
+    <loc>https://hstarhu.com/2017/10/24/install-TA-LIB/</loc>
+    
+    <lastmod>2017-10-24T08:54:32.307Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://hstarhu.com/2017/01/09/django-middleware-update/</loc>
     
     <lastmod>2017-09-22T03:05:10.000Z</lastmod>
     
   </url>
   
   <url>
-    <loc>https://hstarhu.com/2017/01/09/django-middleware-update/</loc>
+    <loc>https://hstarhu.com/2017/09/12/importlib/</loc>
     
     <lastmod>2017-09-22T03:05:10.000Z</lastmod>
     
