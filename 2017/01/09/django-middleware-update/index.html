@@ -50,19 +50,29 @@
 
 <link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
 
-<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="python,django," />
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
 
 
 
 
 
+  <meta name="keywords" content="django,python," />
 
 
 
-  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+
 
 
 
@@ -70,14 +80,14 @@
 
 
 <meta name="description" content="前言Django升级1.10后,中间件有了很大的变化.虽然说给以往版本升级1.10增加了少许工作,但是的确简化了中间件,更容易理解和使用.">
-<meta name="keywords" content="python,django">
+<meta name="keywords" content="django,python">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Django 1.10后的中间件(middleware)使用及升级">
 <meta property="og:url" content="https://hstarhu.com/2017/01/09/django-middleware-update/index.html">
 <meta property="og:site_name" content="Star&#39;s Blog">
 <meta property="og:description" content="前言Django升级1.10后,中间件有了很大的变化.虽然说给以往版本升级1.10增加了少许工作,但是的确简化了中间件,更容易理解和使用.">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2017-09-22T03:05:10.000Z">
+<meta property="og:updated_time" content="2018-07-03T15:30:35.642Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Django 1.10后的中间件(middleware)使用及升级">
 <meta name="twitter:description" content="前言Django升级1.10后,中间件有了很大的变化.虽然说给以往版本升级1.10增加了少许工作,但是的确简化了中间件,更容易理解和使用.">
@@ -89,11 +99,11 @@
   var CONFIG = {
     root: '/',
     scheme: 'Mist',
-    version: '5.1.2',
-    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
     fancybox: true,
     tabs: true,
-    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn"}},
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
     duoshuo: {
       userId: '0',
       author: '博主'
@@ -387,17 +397,22 @@
 
       
         <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Django升级1.10后,中间件有了很大的变化.虽然说给以往版本升级1.10增加了少许工作,但是的确简化了中间件,更容易理解和使用.<br><a id="more"></a></p>
-<h2 id="Django-1-9及以前的中间件"><a href="#Django-1-9及以前的中间件" class="headerlink" title="Django 1.9及以前的中间件"></a>Django 1.9及以前的中间件</h2><p>1.9及以前的中间件只有一种结构,就是新建一个类,在其中按照django文档所述建立几个钩子函数,因为已经是历史了,在这里不多废话,简单写一个例子.<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">SimpleMiddleware</span><span class="params">(object)</span>:</span></div><div class="line">    <span class="comment"># 1.9及以前的middleware</span></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self)</span>:</span></div><div class="line">        <span class="keyword">pass</span></div><div class="line">    </div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">process_request</span><span class="params">(self, request)</span>:</span></div><div class="line">        <span class="keyword">return</span> HttpResponse <span class="keyword">or</span> <span class="keyword">None</span></div><div class="line">    </div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">process_view</span><span class="params">(self, request, view_func, view_args, view_kwargs)</span>:</span></div><div class="line">        <span class="keyword">return</span> HttpResponse <span class="keyword">or</span> <span class="keyword">None</span></div><div class="line">    </div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">process_response</span><span class="params">(self, request, response)</span>:</span></div><div class="line">        <span class="keyword">return</span> HttpResponse</div><div class="line">    </div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">process_template_response</span><span class="params">(self, request, response)</span>:</span></div><div class="line">        <span class="keyword">return</span> HttpResponse</div><div class="line">    </div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">process_exception</span><span class="params">(self, request)</span>:</span></div><div class="line">        <span class="keyword">return</span> HttpResponse <span class="keyword">or</span> <span class="keyword">None</span></div><div class="line">```  </div><div class="line"></div><div class="line"><span class="comment">## Django 1.10的中间件  </span></div><div class="line"><span class="number">1.10</span>后,中间件有两种,一种是和以前一样新建一个类,或者直接新建一个函数.参考[Middleware](https://docs.djangoproject.com/en/<span class="number">1.10</span>/topics/http/middleware/).  </div><div class="line"></div><div class="line"><span class="number">1.</span> 方法一  </div><div class="line">    ``` python  </div><div class="line">    <span class="class"><span class="keyword">class</span> <span class="title">SimpleMiddleware</span><span class="params">(object)</span>:</span>  </div><div class="line">        <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, get_response)</span>:</span></div><div class="line">            self.get_response = get_response</div><div class="line">            <span class="comment"># 初始化,仅在启动时调用一次</span></div><div class="line">        </div><div class="line">        <span class="function"><span class="keyword">def</span> <span class="title">__call__</span><span class="params">(self, request)</span>:</span></div><div class="line">            <span class="comment"># 在调用view前执行的代码,可对request进行操作</span></div><div class="line">            </div><div class="line">            response = self.get_response(request)</div><div class="line"></div><div class="line">            <span class="comment"># 在调用view后执行的代码,在此可对request和response进行操作</span></div><div class="line">            </div><div class="line">            <span class="keyword">return</span> response</div></pre></td></tr></table></figure></p>
+<h2 id="Django-1-9及以前的中间件"><a href="#Django-1-9及以前的中间件" class="headerlink" title="Django 1.9及以前的中间件"></a>Django 1.9及以前的中间件</h2><p>1.9及以前的中间件只有一种结构,就是新建一个类,在其中按照django文档所述建立几个钩子函数,因为已经是历史了,在这里不多废话,简单写一个例子.<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">SimpleMiddleware</span><span class="params">(object)</span>:</span></span><br><span class="line">    <span class="comment"># 1.9及以前的middleware</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="keyword">pass</span></span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">process_request</span><span class="params">(self, request)</span>:</span></span><br><span class="line">        <span class="keyword">return</span> HttpResponse <span class="keyword">or</span> <span class="keyword">None</span></span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">process_view</span><span class="params">(self, request, view_func, view_args, view_kwargs)</span>:</span></span><br><span class="line">        <span class="keyword">return</span> HttpResponse <span class="keyword">or</span> <span class="keyword">None</span></span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">process_response</span><span class="params">(self, request, response)</span>:</span></span><br><span class="line">        <span class="keyword">return</span> HttpResponse</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">process_template_response</span><span class="params">(self, request, response)</span>:</span></span><br><span class="line">        <span class="keyword">return</span> HttpResponse</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">process_exception</span><span class="params">(self, request)</span>:</span></span><br><span class="line">        <span class="keyword">return</span> HttpResponse <span class="keyword">or</span> <span class="keyword">None</span></span><br></pre></td></tr></table></figure></p>
+<h2 id="Django-1-10的中间件"><a href="#Django-1-10的中间件" class="headerlink" title="Django 1.10的中间件"></a>Django 1.10的中间件</h2><p>1.10后,中间件有两种,一种是和以前一样新建一个类,或者直接新建一个函数.参考 <a href="https://docs.djangoproject.com/en/1.10/topics/http/middleware/" target="_blank" rel="noopener">Middleware</a>.  </p>
 <ol>
-<li>方法二   <figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">simple_middleware</span><span class="params">(get_response)</span>:</span></div><div class="line">    <span class="comment"># 初始化,仅在启动时调用一次</span></div><div class="line">    </div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">middleware</span><span class="params">(request)</span>:</span></div><div class="line">        <span class="comment"># 在调用view前执行的代码,可对request进行操作</span></div><div class="line"></div><div class="line">        response = get_response(request)</div><div class="line"></div><div class="line">        <span class="comment"># 在调用view后执行的代码,在此可对request和response进行操作</span></div><div class="line"></div><div class="line">        <span class="keyword">return</span> response</div><div class="line"></div><div class="line">    <span class="keyword">return</span> middleware</div></pre></td></tr></table></figure>
+<li><p>方法一</p>
+ <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">SimpleMiddleware</span><span class="params">(object)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, get_response)</span>:</span></span><br><span class="line">        self.get_response = get_response</span><br><span class="line">        <span class="comment"># 初始化,仅在启动时调用一次</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__call__</span><span class="params">(self, request)</span>:</span></span><br><span class="line">        <span class="comment"># 在调用view前执行的代码,可对request进行操作</span></span><br><span class="line"></span><br><span class="line">        response = self.get_response(request)</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 在调用view后执行的代码,在此可对request和response进行操作</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> response</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>方法二</p>
+ <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">simple_middleware</span><span class="params">(get_response)</span>:</span></span><br><span class="line">    <span class="comment"># 初始化,仅在启动时调用一次</span></span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">middleware</span><span class="params">(request)</span>:</span></span><br><span class="line">        <span class="comment"># 在调用view前执行的代码,可对request进行操作</span></span><br><span class="line"></span><br><span class="line">        response = get_response(request)</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 在调用view后执行的代码,在此可对request和response进行操作</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> response</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> middleware</span><br></pre></td></tr></table></figure>
 </li>
 </ol>
 <p>可见,相比旧版的构筑方式,新版构筑方式非常简洁和容易理解,但是新版中间件中,只重写了<code>process_request</code>和<code>process_response</code>,用<code>__call__</code>替代.其他三种钩子函数依然存在,调用方法也和之前保持一致.但的确平时只用到了这两个钩子函数,只有看文档才能回想起其他那三种的存在.</p>
-<h2 id="将之前的中间件升级以适配1-10"><a href="#将之前的中间件升级以适配1-10" class="headerlink" title="将之前的中间件升级以适配1.10"></a>将之前的中间件升级以适配1.10</h2><p>方法很简单,参考文档<a href="https://docs.djangoproject.com/en/1.10/topics/http/middleware/#upgrading-pre-django-1-10-style-middleware" target="_blank" rel="external">Upgrading pre-Django 1.10-style middleware</a>,其实就是给之前的中间件类一个父类,这个父类会帮助我们进行切换.<br>很简单的例子:<code>class SimpleMiddleware(object):</code>变为<code>class SimpleMiddleware(MiddlewareMixin):</code>即可,这个转换用的父类路径是<code>django.utils.deprecation.MiddlewareMixin</code>.<br>它的代码十分简单,看完就能理解新旧中间件的区别.<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"># django.utils.deprecation.py L126</div><div class="line">class MiddlewareMixin(object):</div><div class="line">    def __init__(self, get_response=None):</div><div class="line">        self.get_response = get_response</div><div class="line">        super(MiddlewareMixin, self).__init__()</div><div class="line"></div><div class="line">    def __call__(self, request):</div><div class="line">        response = None</div><div class="line">        if hasattr(self, &apos;process_request&apos;):</div><div class="line">            response = self.process_request(request)</div><div class="line">        if not response:</div><div class="line">            response = self.get_response(request)</div><div class="line">        if hasattr(self, &apos;process_response&apos;):</div><div class="line">            response = self.process_response(request, response)</div><div class="line">        return response</div></pre></td></tr></table></figure></p>
+<h2 id="将之前的中间件升级以适配1-10"><a href="#将之前的中间件升级以适配1-10" class="headerlink" title="将之前的中间件升级以适配1.10"></a>将之前的中间件升级以适配1.10</h2><p>方法很简单,参考文档<a href="https://docs.djangoproject.com/en/1.10/topics/http/middleware/#upgrading-pre-django-1-10-style-middleware" target="_blank" rel="noopener">Upgrading pre-Django 1.10-style middleware</a>,其实就是给之前的中间件类一个父类,这个父类会帮助我们进行切换.<br>很简单的例子:<code>class SimpleMiddleware(object):</code>变为<code>class SimpleMiddleware(MiddlewareMixin):</code>即可,这个转换用的父类路径是<code>django.utils.deprecation.MiddlewareMixin</code>.<br>它的代码十分简单,看完就能理解新旧中间件的区别.<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"># django.utils.deprecation.py L126</span><br><span class="line">class MiddlewareMixin(object):</span><br><span class="line">    def __init__(self, get_response=None):</span><br><span class="line">        self.get_response = get_response</span><br><span class="line">        super(MiddlewareMixin, self).__init__()</span><br><span class="line"></span><br><span class="line">    def __call__(self, request):</span><br><span class="line">        response = None</span><br><span class="line">        if hasattr(self, &apos;process_request&apos;):</span><br><span class="line">            response = self.process_request(request)</span><br><span class="line">        if not response:</span><br><span class="line">            response = self.get_response(request)</span><br><span class="line">        if hasattr(self, &apos;process_response&apos;):</span><br><span class="line">            response = self.process_response(request, response)</span><br><span class="line">        return response</span><br></pre></td></tr></table></figure></p>
 <h2 id="升级中遇到的一些小坑"><a href="#升级中遇到的一些小坑" class="headerlink" title="升级中遇到的一些小坑"></a>升级中遇到的一些小坑</h2><p>讲讲我自己升级中碰到的一些小坑</p>
 <ol>
 <li>get_response方法<br> 在新版中间件,这个函数非常重要,Django通过这个函数从request获取response,承上启下,不可或缺.从文档可知,这个函数是在中间件初始化<code>__init__</code>时传入的.<strong>但是!!!</strong>,在1.10之前的django中,<code>__init__</code>函数并不是每次都能获取到<code>get_response</code>参数,所以会导致报错.<br> 解决办法就是初始化时给<code>get_response</code>参数一个默认值<code>None</code>,可以参看<code>MiddlewareMixin</code>类的<code>__init__</code>方法.</li>
-<li>settings的中间件列表命名<br> 在之前,settings中的中间件列表是叫<code>MIDDLEWARE_CLASSES</code>的, 然而现在,直接叫做<code>MIDDLEWARE</code>了.如果没注意这一点,依然会各种报错,因为django将你1.10版本的新中间件用1.9的处理方式处理了.<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line"># settings</div><div class="line"># before</div><div class="line">MIDDLEWARE_CLASSES = [</div><div class="line">    &apos;django.middleware.security.SecurityMiddleware&apos;,</div><div class="line">    &apos;django.contrib.sessions.middleware.SessionMiddleware&apos;,</div><div class="line">    &apos;django.middleware.common.CommonMiddleware&apos;,</div><div class="line">    &apos;django.middleware.csrf.CsrfViewMiddleware&apos;,</div><div class="line">    &apos;django.contrib.auth.middleware.AuthenticationMiddleware&apos;,</div><div class="line">    &apos;django.contrib.auth.middleware.SessionAuthenticationMiddleware&apos;,</div><div class="line">    &apos;django.contrib.messages.middleware.MessageMiddleware&apos;,</div><div class="line">    &apos;django.middleware.clickjacking.XFrameOptionsMiddleware&apos;,</div><div class="line">]</div><div class="line"># after</div><div class="line">MIDDLEWARE = [</div><div class="line">    &apos;django.middleware.security.SecurityMiddleware&apos;,</div><div class="line">    &apos;django.contrib.sessions.middleware.SessionMiddleware&apos;,</div><div class="line">    &apos;django.middleware.common.CommonMiddleware&apos;,</div><div class="line">    &apos;django.middleware.csrf.CsrfViewMiddleware&apos;,</div><div class="line">    &apos;django.contrib.auth.middleware.AuthenticationMiddleware&apos;,</div><div class="line">    &apos;django.contrib.messages.middleware.MessageMiddleware&apos;,</div><div class="line">    &apos;django.middleware.clickjacking.XFrameOptionsMiddleware&apos;,</div><div class="line">]</div></pre></td></tr></table></figure>
+<li>settings的中间件列表命名<br> 在之前,settings中的中间件列表是叫<code>MIDDLEWARE_CLASSES</code>的, 然而现在,直接叫做<code>MIDDLEWARE</code>了.如果没注意这一点,依然会各种报错,因为django将你1.10版本的新中间件用1.9的处理方式处理了.<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"># settings</span><br><span class="line"># before</span><br><span class="line">MIDDLEWARE_CLASSES = [</span><br><span class="line">    &apos;django.middleware.security.SecurityMiddleware&apos;,</span><br><span class="line">    &apos;django.contrib.sessions.middleware.SessionMiddleware&apos;,</span><br><span class="line">    &apos;django.middleware.common.CommonMiddleware&apos;,</span><br><span class="line">    &apos;django.middleware.csrf.CsrfViewMiddleware&apos;,</span><br><span class="line">    &apos;django.contrib.auth.middleware.AuthenticationMiddleware&apos;,</span><br><span class="line">    &apos;django.contrib.auth.middleware.SessionAuthenticationMiddleware&apos;,</span><br><span class="line">    &apos;django.contrib.messages.middleware.MessageMiddleware&apos;,</span><br><span class="line">    &apos;django.middleware.clickjacking.XFrameOptionsMiddleware&apos;,</span><br><span class="line">]</span><br><span class="line"># after</span><br><span class="line">MIDDLEWARE = [</span><br><span class="line">    &apos;django.middleware.security.SecurityMiddleware&apos;,</span><br><span class="line">    &apos;django.contrib.sessions.middleware.SessionMiddleware&apos;,</span><br><span class="line">    &apos;django.middleware.common.CommonMiddleware&apos;,</span><br><span class="line">    &apos;django.middleware.csrf.CsrfViewMiddleware&apos;,</span><br><span class="line">    &apos;django.contrib.auth.middleware.AuthenticationMiddleware&apos;,</span><br><span class="line">    &apos;django.contrib.messages.middleware.MessageMiddleware&apos;,</span><br><span class="line">    &apos;django.middleware.clickjacking.XFrameOptionsMiddleware&apos;,</span><br><span class="line">]</span><br></pre></td></tr></table></figure>
 </li>
 </ol>
 <h2 id="结语"><a href="#结语" class="headerlink" title="结语"></a>结语</h2><p>虽然说新版本的中间件很简洁很人性化,但是升级过程很蛋疼.不知道在哪看到过,这种开发过程中由于各种原因留下的,后面不得不去修改的,称为’技术债’.<br>虽然我们主观上不喜欢欠债,但是不可否认贷款是快速发展必经之路.</p>
@@ -436,9 +451,9 @@
       
         <div class="post-tags">
           
-            <a href="/tags/python/" rel="tag"># python</a>
-          
             <a href="/tags/django/" rel="tag"># django</a>
+          
+            <a href="/tags/python/" rel="tag"># python</a>
           
         </div>
       
@@ -491,16 +506,19 @@
 
 
           
-  <div class="comments" id="comments">
-    
+
+  
+    <div class="comments" id="comments">
       <div id="disqus_thread">
         <noscript>
           Please enable JavaScript to view the
           <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
         </noscript>
       </div>
-    
-  </div>
+    </div>
+
+  
+
 
 
         </div>
@@ -523,92 +541,93 @@
 
       
         <ul class="sidebar-nav motion-element">
-          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
             文章目录
           </li>
-          <li class="sidebar-nav-overview" data-target="site-overview">
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
             站点概览
           </li>
         </ul>
       
 
-      <section class="site-overview sidebar-panel">
-        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/avatar.png"
+                alt="StarHu" />
+            
+              <p class="site-author-name" itemprop="name">StarHu</p>
+              <p class="site-description motion-element" itemprop="description">胡说八道</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">1</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
           
-            <img class="site-author-image" itemprop="image"
-              src="/images/avatar.png"
-              alt="StarHu" />
+
           
-            <p class="site-author-name" itemprop="name">StarHu</p>
-            <p class="site-description motion-element" itemprop="description">胡说八道</p>
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/starhu" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:hxldxx99@gmail.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
         </div>
-
-        <nav class="site-state motion-element">
-
-          
-            <div class="site-state-item site-state-posts">
-            
-              <a href="/archives/">
-            
-                <span class="site-state-item-count">5</span>
-                <span class="site-state-item-name">日志</span>
-              </a>
-            </div>
-          
-
-          
-            
-            
-            <div class="site-state-item site-state-categories">
-              <a href="/categories/index.html">
-                <span class="site-state-item-count">1</span>
-                <span class="site-state-item-name">分类</span>
-              </a>
-            </div>
-          
-
-          
-            
-            
-            <div class="site-state-item site-state-tags">
-              <a href="/tags/index.html">
-                <span class="site-state-item-count">4</span>
-                <span class="site-state-item-name">标签</span>
-              </a>
-            </div>
-          
-
-        </nav>
-
-        
-
-        <div class="links-of-author motion-element">
-          
-            
-              <span class="links-of-author-item">
-                <a href="https://github.com/starhu" target="_blank" title="GitHub">
-                  
-                    <i class="fa fa-fw fa-github"></i>GitHub</a>
-              </span>
-            
-              <span class="links-of-author-item">
-                <a href="mailto:hxldxx99@gmail.com" target="_blank" title="E-Mail">
-                  
-                    <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
-              </span>
-            
-          
-        </div>
-
-        
-        
-
-        
-        
-
-        
-
-
       </section>
 
       
@@ -621,7 +640,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Django-1-9及以前的中间件"><span class="nav-number">2.</span> <span class="nav-text">Django 1.9及以前的中间件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#将之前的中间件升级以适配1-10"><span class="nav-number">3.</span> <span class="nav-text">将之前的中间件升级以适配1.10</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#升级中遇到的一些小坑"><span class="nav-number">4.</span> <span class="nav-text">升级中遇到的一些小坑</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#结语"><span class="nav-number">5.</span> <span class="nav-text">结语</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Django-1-9及以前的中间件"><span class="nav-number">2.</span> <span class="nav-text">Django 1.9及以前的中间件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Django-1-10的中间件"><span class="nav-number">3.</span> <span class="nav-text">Django 1.10的中间件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#将之前的中间件升级以适配1-10"><span class="nav-number">4.</span> <span class="nav-text">将之前的中间件升级以适配1.10</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#升级中遇到的一些小坑"><span class="nav-number">5.</span> <span class="nav-text">升级中遇到的一些小坑</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#结语"><span class="nav-number">6.</span> <span class="nav-text">结语</span></a></li></ol></div>
             
 
           </div>
@@ -641,24 +660,27 @@
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright" >
-  
-  &copy; 
-  <span itemprop="copyrightYear">2017</span>
+        <div class="copyright">&copy; 2017 &mdash; <span itemprop="copyrightYear">2018</span>
   <span class="with-love">
-    <i class="fa fa-heart"></i>
+    <i class="fa fa-user"></i>
   </span>
   <span class="author" itemprop="copyrightHolder">StarHu</span>
-  <a href="http://www.miitbeian.gov.cn/">沪ICP备16020451号-1</a>
+
   
 </div>
 
 
-  <div class="powered-by">由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动</div>
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
 
   <span class="post-meta-divider">|</span>
 
-  <div class="theme-info">主题 &mdash; <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.2</div>
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+
+
 
 
         
@@ -678,6 +700,8 @@
         <i class="fa fa-arrow-up"></i>
         
       </div>
+    
+
     
 
   </div>
@@ -712,46 +736,58 @@
 
 
   
-  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
-
   
-  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
-
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
   
-  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
-
-  
-  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
-
-  
-  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
-
-  
-  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
-
-
-  
-
-
-  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
-
-  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
-
-
 
   
   
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
 
-  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
-<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
 
 
   
 
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
   
 
 
-  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
 
 
 
@@ -790,6 +826,10 @@
 
 
   
+
+
+
+
 
 
 
@@ -1130,10 +1170,13 @@
   
 
   
+  
 
   
-  <script type="text/javascript" src="/js/src/js.cookie.js?v=5.1.2"></script>
-  <script type="text/javascript" src="/js/src/scroll-cookie.js?v=5.1.2"></script>
+
+  
+  <script type="text/javascript" src="/js/src/js.cookie.js?v=5.1.4"></script>
+  <script type="text/javascript" src="/js/src/scroll-cookie.js?v=5.1.4"></script>
 
 
   
